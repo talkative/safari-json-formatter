@@ -125,7 +125,8 @@
 
       for( var i = 0, ii = keys.length; i < ii; i++ ) {
         this._append( list, this._append( this._html( "<dt/>" ), this._html( '<span class="decorator">"</span>', document.createTextNode( keys[i] ), '<span class="decorator">"</span>', '<span class="delimiter">:</span>' ) ) );
-        this._append( list, this._append( this._html( "<dd/>" ), this.render( obj[keys[i]] ) ) );
+        var isURI = (keys[i]=="uri") ? true : false;
+        this._append( list, this._append( this._html( "<dd/>" ), this.render( obj[keys[i]],isURI ) ) );
       }
 
       return this._append(
@@ -142,10 +143,21 @@
      * render a literal value as HTML
      *  renderValue( "foo" ) => Element
      */
-    renderValue: function( l, quote ) {
+    renderValue: function( l, quote, isURI ) {
+	  if(isURI){
+	  	//unescape the url
+	  	l = l.split( "\\" ).join( "" );
+	  	var href = l = l.split( "\\" ).join( "" );
+	  }
       var val = document.createTextNode( l );
       if( quote ) {
-        val = this._html( '<span class="decorator">"</span>', val, '<span class="decorator">"</span>' );
+      	if(isURI){
+			var link = document.createElement('a');
+			link.setAttribute('href', href);
+			link.appendChild(val);
+			val = link;
+   		}
+      	val = this._html( '<span class="decorator" rel="tesssss">"</span>', val, '<span class="decorator">"</span>' );
       }
       return this._append( this._append( this._html( '<span class="value"/>' ), val ), this._html( '<span class="separator">,</span>' ) );
     },
@@ -154,7 +166,7 @@
      * render a javascript variable as HTML
      *  render( foo ) => Element
      */
-    render: function( obj ) {
+    render: function( obj , isURI ) {
       var t = this._typeof( obj );
       switch( t ) {
         case "array":  return this.renderArray( obj );
@@ -163,7 +175,7 @@
         case "null":
         case "number":
         case "string":
-          var el = this.renderValue( obj, t == "string" );
+          var el = this.renderValue( obj, t == "string", isURI );
           el.className += " " + t;
           return el;
       }
