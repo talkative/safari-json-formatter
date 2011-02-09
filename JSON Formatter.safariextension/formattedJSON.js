@@ -156,6 +156,15 @@
 			link.setAttribute('href', href);
 			link.appendChild(val);
 			val = link;
+   		} else {
+   		if(quote){
+	   		l = l.split( "\\" ).join( "" );
+   			var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+   			l.replace(exp,"<a href='$1'>$1</a>");
+   			val.innerHTML=l;
+   		
+   		}
+   		
    		}
       	val = this._html( '<span class="decorator" rel="tesssss">"</span>', val, '<span class="decorator">"</span>' );
       }
